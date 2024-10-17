@@ -147,6 +147,49 @@ def main(params):
     cv2.destroyAllWindows()
 
 
+class GazeEstimator:
+    def __init__(self, arch: str, gaze_weights: str, face_weights: str, bins: int, binwidth: float, angle: float, device: torch.device):
+        self.idx_tensor = torch.arange(bins, device=device, dtype=torch.float32)
+        self.binwidth = binwidth
+        self.device = device
+        self.angle = angle
+
+        try:
+            self.face_detector = SCRFD(model_path=face_weights)
+            logging.info("Face Detection model weights loaded.")
+        except Exception as e:
+            logging.info(f"Exception occured while loading pre-trained weights of face detection model. Exception: {e}")
+
+        try:
+            self.gaze_detector = get_model(arch, bins, inference_mode=True)
+            state_dict = torch.load(gaze_weights, map_location=device)
+            self.gaze_detector.load_state_dict(state_dict)
+            logging.info("Gaze Estimation model weights loaded.")
+        except Exception as e:
+            logging.info(f"Exception occured while loading pre-trained weights of gaze estimation model. Exception: {e}")
+
+        self.gaze_detector.to(device)
+        self.gaze_detector.eval()
+
+    def predict(self, face_img: np.ndarray):
+        image = pre_process(face_img)
+        image = image.to(self.device)
+
+        pitch, yaw = self.gaze_detector(image)
+
+        pitch_predicted, yaw_predicted = F.softmax(pitch, dim=1), F.softmax(yaw, dim=1)
+
+        # Mapping from binned (0 to 90) to angles (-180 to 180) or (0 to 28) to angles (-42, 42)
+        pitch_predicted = torch.sum(pitch_predicted * self.idx_tensor, dim=1) * self.binwidth - self.angle
+        yaw_predicted = torch.sum(yaw_predicted * self.idx_tensor, dim=1) * self.binwidth - self.angle
+
+        # Degrees to Radians
+        pitch_predicted = np.radians(pitch_predicted.cpu())
+        yaw_predicted = np.radians(yaw_predicted.cpu())
+
+        return pitch_predicted, yaw_predicted
+
+
 if __name__ == "__main__":
     args = parse_args()
 
