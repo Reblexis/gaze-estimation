@@ -148,11 +148,15 @@ def main(params):
 
 
 class GazeEstimator:
-    def __init__(self, arch: str, gaze_weights: str, face_weights: str, bins: int, binwidth: float, angle: float, device: torch.device):
-        self.idx_tensor = torch.arange(bins, device=device, dtype=torch.float32)
-        self.binwidth = binwidth
+    def __init__(self, arch: str, gaze_weights: str, face_weights: str, dataset: str, device: torch.device):
+
+        dataset_config = data_config[dataset]
+        self.bins = dataset_config["bins"]
+        self.binwidth = dataset_config["binwidth"]
+        self.angle = dataset_config["angle"]
+
+        self.idx_tensor = torch.arange(self.bins, device=device, dtype=torch.float32)
         self.device = device
-        self.angle = angle
 
         try:
             self.face_detector = SCRFD(model_path=face_weights)
