@@ -148,7 +148,7 @@ def main(params):
 
 
 class GazeEstimator:
-    def __init__(self, arch: str, gaze_weights: str, face_weights: str, dataset: str, device: torch.device):
+    def __init__(self, arch: str, gaze_weights: str, dataset: str, device: torch.device):
 
         dataset_config = data_config[dataset]
         self.bins = dataset_config["bins"]
@@ -157,12 +157,6 @@ class GazeEstimator:
 
         self.idx_tensor = torch.arange(self.bins, device=device, dtype=torch.float32)
         self.device = device
-
-        try:
-            self.face_detector = SCRFD(model_path=face_weights)
-            logging.info("Face Detection model weights loaded.")
-        except Exception as e:
-            logging.info(f"Exception occured while loading pre-trained weights of face detection model. Exception: {e}")
 
         self.gaze_detector = get_model(arch, self.bins, inference_mode=True)
         state_dict = torch.load(gaze_weights, map_location=device)
