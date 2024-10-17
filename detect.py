@@ -172,22 +172,23 @@ class GazeEstimator:
         self.gaze_detector.eval()
 
     def predict(self, face_img: np.ndarray):
-        image = pre_process(face_img)
-        image = image.to(self.device)
+        with torch.no_grad():
+            image = pre_process(face_img)
+            image = image.to(self.device)
 
-        pitch, yaw = self.gaze_detector(image)
+            pitch, yaw = self.gaze_detector(image)
 
-        pitch_predicted, yaw_predicted = F.softmax(pitch, dim=1), F.softmax(yaw, dim=1)
+            pitch_predicted, yaw_predicted = F.softmax(pitch, dim=1), F.softmax(yaw, dim=1)
 
-        # Mapping from binned (0 to 90) to angles (-180 to 180) or (0 to 28) to angles (-42, 42)
-        pitch_predicted = torch.sum(pitch_predicted * self.idx_tensor, dim=1) * self.binwidth - self.angle
-        yaw_predicted = torch.sum(yaw_predicted * self.idx_tensor, dim=1) * self.binwidth - self.angle
+            # Mapping from binned (0 to 90) to angles (-180 to 180) or (0 to 28) to angles (-42, 42)
+            pitch_predicted = torch.sum(pitch_predicted * self.idx_tensor, dim=1) * self.binwidth - self.angle
+            yaw_predicted = torch.sum(yaw_predicted * self.idx_tensor, dim=1) * self.binwidth - self.angle
 
-        # Degrees to Radians
-        pitch_predicted = np.radians(pitch_predicted.cpu())
-        yaw_predicted = np.radians(yaw_predicted.cpu())
+            # Degrees to Radians
+            pitch_predicted = np.radians(pitch_predicted.cpu().numpy())
+            yaw_predicted = np.radians(yaw_predicted.cpu().numpy())
 
-        return pitch_predicted, yaw_predicted
+            return pitch_predicted, yaw_predicted
 
 
 if __name__ == "__main__":
