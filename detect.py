@@ -164,7 +164,7 @@ class GazeEstimator:
         except Exception as e:
             logging.info(f"Exception occured while loading pre-trained weights of face detection model. Exception: {e}")
 
-        self.gaze_detector = get_model(arch, bins, inference_mode=True)
+        self.gaze_detector = get_model(arch, self.bins, inference_mode=True)
         state_dict = torch.load(gaze_weights, map_location=device)
         self.gaze_detector.load_state_dict(state_dict)
 
