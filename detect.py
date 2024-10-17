@@ -12,7 +12,7 @@ from torchvision import transforms
 
 from models import SCRFD
 from config import data_config
-from gaze_estimation.utils.helpers import get_model, draw_bbox_gaze
+from utils.helpers import get_model, draw_bbox_gaze
 
 warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -185,8 +185,8 @@ class GazeEstimator:
             yaw_predicted = torch.sum(yaw_predicted * self.idx_tensor, dim=1) * self.binwidth - self.angle
 
             # Degrees to Radians
-            pitch_predicted = np.radians(pitch_predicted.cpu().numpy())
-            yaw_predicted = np.radians(yaw_predicted.cpu().numpy())
+            pitch_predicted = float(np.radians(pitch_predicted.cpu().numpy()))
+            yaw_predicted = float(np.radians(yaw_predicted.cpu().numpy()))
 
             return pitch_predicted, yaw_predicted
         
