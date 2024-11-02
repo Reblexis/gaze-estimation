@@ -9,8 +9,8 @@ import numpy as np
 from tqdm import tqdm
 import torch.nn.functional as F
 
-from config import data_config
-from utils.helpers import angular_error, gaze_to_3d, get_dataloader, get_model
+from external.gaze_estimation.config import data_config
+from external.gaze_estimation.utils.helpers import angular_error, gaze_to_3d, get_dataloader, get_model
 
 import warnings
 warnings.filterwarnings("ignore")

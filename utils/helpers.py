@@ -6,9 +6,9 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from utils.datasets import Gaze360, MPIIGaze
+from external.gaze_estimation.utils.datasets import Gaze360, MPIIGaze
 
-from models import (
+from external.gaze_estimation.models import (
     resnet18,
     resnet34,
     resnet50,

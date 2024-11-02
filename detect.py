@@ -10,9 +10,9 @@ import torch.nn.functional as F
 from torchvision import transforms
 
 
-from models import SCRFD
-from config import data_config
-from utils.helpers import get_model, draw_bbox_gaze
+from external.gaze_estimation.models import SCRFD
+from external.gaze_estimation.config import data_config
+from external.gaze_estimation.utils.helpers import get_model, draw_bbox_gaze
 
 warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format='%(message)s')

@@ -9,8 +9,8 @@ import torch.nn.functional as F
 
 from torch.utils.data import DataLoader
 
-from config import data_config
-from utils.helpers import get_model, get_dataloader
+from external.gaze_estimation.config import data_config
+from external.gaze_estimation.utils.helpers import get_model, get_dataloader
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
